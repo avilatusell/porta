@@ -190,6 +190,21 @@ module ThreeScale
       template.content_tag(:li, template.link_to(label, path), :class => 'link')
     end
 
+    def backend_api_system_name
+      label = template.content_tag(:label, for: 'backend_api_system_name') do
+        Formtastic::Util.html_safe('System name') + template.content_tag(:abbr, '*', title: 'required')
+      end
+      input = template.content_tag(:input, nil, maxlength: '255', id: 'backend_api_system_name', type: 'text', name: 'backend_api[system_name]')
+      input << template.content_tag(:p, '.1234')
+      input << template.content_tag(:div, nil, id: 'system_name_popover')
+      input << template.javascript_pack_tag('backend_api_popover')
+      input << template.javascript_pack_tag('PF4Styles/popover')
+      p = template.content_tag(:p, 'Only ASCII letters, numbers, dashes and underscores are allowed.', class: 'inline-hints')
+      content = label + template.content_tag(:div, input) + p
+
+      template.content_tag(:li, content, id: 'backend_api_system_name_input', class: 'string required')
+    end
+
     def system_name
       if @object.new_record?
         input :system_name, :hint => "Only ASCII letters, numbers, dashes and underscores are allowed."
