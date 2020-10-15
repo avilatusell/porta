@@ -3,6 +3,8 @@ import { render } from 'react-dom'
 
 import { Popover } from '@patternfly/react-core'
 
+import 'Form/BackendApiPopover.scss'
+
 const BackendApiPopover = () => (
   <Popover
     maxWidth="420px"
