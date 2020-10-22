@@ -9,7 +9,7 @@ Feature: Buyer's application management
     And provider "foo.example.com" has multiple applications enabled
     And provider "foo.example.com" has "service_plans" visible
     And provider "foo.example.com" has "multiple_services" visible
-    And an published application plan "Default" of provider "foo.example.com"
+    And a published application plan "Default" of provider "foo.example.com"
     And a service plan "Gold" of provider "foo.example.com"
     And a buyer "bob" signed up to service plan "Gold"
     And I don't care about application keys
@@ -46,7 +46,7 @@ Feature: Buyer's application management
      And I fill in "Description" with "Awesome ultimate super widget"
      And I press "Create"
      And I should be on the "UltimateWidget" application page
-     And I should see "Name UltimateWidget"
+    And I should see "Name UltimateWidget"
      And I should see "Awesome ultimate super widget"
      And I should see "Plan Train"
      And buyer "bob" should have 1 cinstance
@@ -70,7 +70,7 @@ Feature: Buyer's application management
   @javascript
   Scenario: Can request plan change on an already existing application
     Given buyer "bob" has application "UltraWidget" with description "Slightly less awesome widget"
-    And an published application plan "Bronze" of provider "foo.example.com"
+    And a published application plan "Bronze" of provider "foo.example.com"
    When I log in as "bob" on foo.example.com
     And I go to the applications page
     And I follow "UltraWidget"
@@ -212,8 +212,8 @@ Feature: Buyer's application management
     Given a service "Fancy" of provider "foo.example.com"
     Given a service "Awesome" of provider "foo.example.com"
     And a default service of provider "foo.example.com" has name "Boring"
-    And an published application plan "AppPlan" of service "Awesome"
-    And an published application plan "Fancy Plan" of service "Fancy"
+    And a published application plan "AppPlan" of service "Awesome"
+    And a published application plan "Fancy Plan" of service "Fancy"
     And a service plan "Good" of service "Fancy"
     And service plan "Good" requires approval
     And buyer "bob" subscribed service "Fancy" with plan "Good"
