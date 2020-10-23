@@ -24,11 +24,6 @@ end
 #   assert(page.all('a').none? { |node| matches_path?(node[:href], path) })
 # end
 
-#TODO: move this outta here!
-def matches_path?(url, path)
-  url =~ /^(?:https?:\/\/[^\/]+)?#{Regexp.quote(path)}/
-end
-
 Then "I should be redirected" do
   follow_redirect!
 end

@@ -10,15 +10,15 @@ Given "{provider} has no groups for buyers" do |provider|
   assert provider.provided_groups_for_buyers.empty?
 end
 
-Given "user {user} has access to the admin section {string}" do |user, group|
+Given "{user} has access to the admin section {string}" do |user, group|
   user.member_permissions.create! admin_section: group
 end
 
-Given "user {user} belongs to the (buyer group {string} of provider {string})" do |user, group|
+Given "{user} belongs to the {buyer_group_of_provider}" do |user, group|
   user.user_group_memberships.create! group_id: group.id
 end
 
-Given "user {user} does not belong to the admin group {string} of provider {string}" do |user, admin_section|
+Given "{user} does not belong to the admin group {string} of provider {string}" do |user, admin_section|
   if user.has_permission?(admin_section)
     user.admin_sections = user.admin_sections - [admin_section]
     user.save
@@ -37,15 +37,11 @@ When "I update a group" do
 end
 
 Then "the group {string} should be created" do |name|
-  Group.find_by!(name: name).should_not be_nil
+  assert_not_nil Group.find_by(name: name)
 end
 
-Then "I should see the {buyer} belongs to the buyer group {group_of}" do |account, group|
-  assert account.groups.include?(group)
-end
-
-Then "I should see the {buyer} does not belong to the buyer group {group_of}" do |account, group|
-  assert account.groups.include?(group) # TODO: is this assertion right?
+Then "I should see the {buyer} {does}( )belong(s) to the {buyer_group_of_provider}" do |account, belongs, group|
+  assert_equal belongs, account.groups.include?(group)
 end
 
 Then "I should see no groups" do

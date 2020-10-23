@@ -1,44 +1,15 @@
+# frozen_string_literal: true
+
 module PlanHelpers
 
   def create_plan(type, options)
     options[:cost] ||= 0
 
-    issuer = options[:issuer]
+    plan = mock_plan(type: "#{type}_plan")
 
-    case type.to_sym
-    when :application, :service
-      # TODO: fix this properly, this method gets account as issuer
-      # but needs service to create application or service plan
-      issuer = issuer.first_service! if issuer.is_a?(Account)
-    end
-
-    master_plans = %w[base plus power1M power2M power3M power5M pro3M pro5M pro10M pro20M enterprise]
-    plan = if master_plans.include? options[:name]
-             FactoryBot.create(type.to_s + '_plan',
-                     :name => options[:name],
-                     :issuer => issuer,
-                     :cost_per_month => options[:cost],
-                     :system_name => options[:name])
-           else
-             FactoryBot.create(type.to_s + '_plan',
-                     :name => options[:name],
-                     :issuer => issuer,
-                     :cost_per_month => options[:cost])
-           end
-
-
-    if flags = options[:flags]
-      options[:default] = true if flags.include? 'default'
-      options[:published] = true if flags.include? 'published'
-    end
-
-    if options[:default] || options[:name] == "Default"
-      make_plan_default(plan)
-    end
-
-    if options[:published]
-      plan.publish!
-    end
+    flags = options[:flags]
+    make_plan_default(plan) if flags.include?('default') || options[:name] == "Default"
+    plan.publish! if flags.include?('published')
 
     plan
   end
@@ -55,22 +26,38 @@ module PlanHelpers
   end
 
   def sign_up(buyer, name)
-    plan = Plan.find_by_name(name)
-    raise "Plan #{name} not found" unless plan
+    plan = Plan.find_by!(name: name)
     buyer.buy!(plan)
   end
 
   def change_plan_permission_to_sym(mode)
-    if mode =~ /directly/
-      mode = :direct
-    elsif mode =~ /only with credit card/
-      mode = :credit_card
-    elsif mode =~ /by request/
-      mode = :request
-    elsif mode =~ /credit card required/
-      mode = :request_credit_card
+    case mode
+    when /directly/ then :direct
+    when /only with credit card/ then :credit_card
+    when /by request/ then :request
+    when /credit card required/ then :request_credit_card
     end
   end
 
+  private
 
+  def mock_plan(options)
+    issuer = options[:issuer]
+    issuer = issuer.first_service! if issuer.is_a?(Account) && %i[application service].include?(type.to_sym)
+
+    plan_name = options[:name]
+    create_options = {
+      name: plan_name,
+      issuer: issuer,
+      cost_per_month: options[:cost]
+    }
+
+    create_options.merge(ystem_name: plan_name) if master_plan?(plan_name)
+
+    FactoryBot.create(options[:type], create_options)
+  end
+
+  def master_plan?(name)
+    %w[base plus power1M power2M power3M power5M pro3M pro5M pro10M pro20M enterprise].include?(name)
+  end
 end

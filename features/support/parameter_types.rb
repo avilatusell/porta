@@ -60,7 +60,7 @@ ParameterType(
 
 ParameterType(
   name: 'page',
-  regexp: /page "([^\"]*)"/,
+  regexp: /page "([^"]*)"/,
   transformer: ->(title) { Page.find_by!(title: title) }
 )
 
@@ -210,25 +210,25 @@ ParameterType(
 
 ParameterType(
   name: 'page of provider',
-  regexp: /^page "([^\"]*)" of provider "([^\"]*)"$/,
+  regexp: /^page "([^"]*)" of provider "([^"]*)"$/,
   transformer: ->(title, provider_name) do
-    provider = Account.providers.find_by!(org_name: provider_name)
+    provider = find_provider_by!(org_name: provider_name)
     Page.find_by!(title: title, account_id: provider.id)
   end
 )
 
 ParameterType(
   name: 'page at of provider',
-  regexp: /^page at (.*) of provider "([^\"]*)"$/,
+  regexp: /^page at (.*) of provider "([^"]*)"$/,
   transformer: ->(path, provider_name) do
-    provider = Account.providers.find_by!(org_name: provider_name)
+    provider = find_provider_by!(org_name: provider_name)
     Page.find_by!(path: path, account_id: provider.id)
   end
 )
 
 ParameterType(
   name: 'section_of_provider',
-  regexp: /section "([^\"]*)" of provider "([^\"]*)"/,
+  regexp: /section "([^"]*)" of provider "([^"]*)"/,
   transformer: ->(name, provider_name) do
     provider = Account.providers.readonly(false).find_by!(org_name: provider_name)
     provider.provided_sections.find_by!(title: name)
@@ -237,7 +237,7 @@ ParameterType(
 
 ParameterType(
   name: 'html block',
-  regexp: /^html block "([^\"]*)"$/,
+  regexp: /^html block "([^"]*)"$/,
   transformer: ->(name) { HtmlBlock.find_by!(name: name) }
 )
 
@@ -257,13 +257,13 @@ ParameterType(
 
 ParameterType(
   name: 'forum',
-  regexp: /"([^"]*)"|the forum of "[^\"]*"/,
-  transformer: ->(name) { Account.providers.find_by!(org_name: name).forum }
+  regexp: /"([^"]*)"|the forum of "[^"]*"/,
+  transformer: ->(name) { find_provider_by!(org_name: name).forum }
 )
 
 ParameterType(
   name: 'topic',
-  regexp: /^topic "([^\"]+)"$/,
+  regexp: /^topic "([^"]+)"$/,
   transformer: ->(name) { Topic.find_by!(title: title) }
 )
 
@@ -372,8 +372,8 @@ ParameterType(
 )
 
 ParameterType(
-  name: 'group_of',
-  regexp: /buyer group "[^"]*" of provider "[^\"]*"/,
+  name: 'buyer_group_of_provider',
+  regexp: /buyer group "([^"]*)" of provider "([^"]*)"/,
   transformer: ->(name, provider_name) { name }
 )
 
@@ -410,9 +410,9 @@ ParameterType(
 
 ParameterType(
   name: 'service_of_provider',
-  regexp: /service "([^\"]*)" of provider "([^\"]*)"/,
+  regexp: /service "([^"]*)" of provider "([^"]*)"/,
   transformer: ->(service_name, provider_name) do
-    provider = Account.providers.find_by!(org_name: provider_name)
+    provider = find_provider_by!(org_name: provider_name)
     provider.services.find_by!(name: service_name)
   end
 )
@@ -458,7 +458,7 @@ OAUTH_PROVIDER_OPTIONS = {
 
 ParameterType(
   name: 'authentication_provider',
-  regexp: /^authentication provider "([^\"]+)"$/,
+  regexp: /^authentication provider "([^"]+)"$/,
   transformer: ->(authentication_provider_name) do
     authentication_provider = @provider.authentication_providers.find_by(name: authentication_provider_name)
     return authentication_provider if authentication_provider
@@ -577,3 +577,13 @@ ParameterType(
   regexp: /(on|off)/,
   transformer: ->(state) { state == 'on' }
 )
+
+ParameterType(
+  name: 'does',
+  regexp: /|does|does not|doesn't/,
+  transformer: ->(value) { value == 'does' || value.blank? }
+)
+
+def find_provider_by!(opts)
+  Account.providers.find_by!(opts)
+end

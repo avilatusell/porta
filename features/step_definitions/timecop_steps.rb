@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 def access_user_sessions
-  UserSession.where("revoked_at is null").each { |e| e.update!(accessed_at: Time.zone.now) }
+  UserSession.where("revoked_at is null").each { |user| user.update!(accessed_at: Time.zone.now) }
 end
 
 Given "the year is {int}" do |year|
