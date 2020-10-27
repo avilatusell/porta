@@ -33,12 +33,17 @@ class Admin::Api::Account::ProxyConfigsController < Admin::Api::BaseController
   private
 
   def proxy_configs
+    ProxyConfig.where(proxy_id: accessible_proxies_ids).by_environment(environment)
+  end
+
+  def accessible_proxies_ids
     accessible_services_ids = System::Database.oracle? ? accessible_services.pluck(:id) : accessible_services.select(:id)
-    ProxyConfig.joins(:proxy).where(proxies: { service_id: accessible_services_ids }).by_environment(environment)
+    accessible_proxies = Proxy.where(service_id: accessible_services_ids)
+    accessible_proxies_ids = System::Database.oracle? ? accessible_proxies.pluck(:id) : accessible_proxies.select(:id)
   end
 
   def accessible_services
-    (current_user || current_account).accessible_services.order(:id)
+    (current_user || current_account).accessible_services
   end
 
   def environment
