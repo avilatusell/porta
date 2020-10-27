@@ -37,9 +37,12 @@ class Admin::Api::Account::ProxyConfigsController < Admin::Api::BaseController
   end
 
   def accessible_proxies_ids
-    accessible_services_ids = System::Database.oracle? ? accessible_services.pluck(:id) : accessible_services.select(:id)
-    accessible_proxies = Proxy.where(service_id: accessible_services_ids)
-    accessible_proxies_ids = System::Database.oracle? ? accessible_proxies.pluck(:id) : accessible_proxies.select(:id)
+    @accessible_proxies_ids ||= begin
+      oracle_adapter = System::Database.oracle?
+      accessible_services_ids = oracle_adapter ? accessible_services.pluck(:id) : accessible_services.select(:id)
+      accessible_proxies = Proxy.where(service_id: accessible_services_ids)
+      oracle_adapter ? accessible_proxies.pluck(:id) : accessible_proxies.select(:id)
+    end
   end
 
   def accessible_services
