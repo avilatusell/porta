@@ -13,6 +13,8 @@ class Admin::Api::Account::ProxyConfigsController < Admin::Api::BaseController
     render_error 'invalid environment', status: :unprocessable_entity
   end
 
+  self.default_per_page = 100
+
   ##~ e = sapi.apis.add
   ##~ e.path = "/admin/api/account/proxy_configs/{environment}.json"
   ##~ e.responseClass = "proxy_config"
