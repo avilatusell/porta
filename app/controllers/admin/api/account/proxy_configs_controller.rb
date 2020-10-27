@@ -40,11 +40,9 @@ class Admin::Api::Account::ProxyConfigsController < Admin::Api::BaseController
 
   def accessible_proxies_ids
     @accessible_proxies_ids ||= begin
-      oracle_adapter = System::Database.oracle?
       accessible_services_ids = current_account.accessible_services.pluck(:id)
       accessible_services_ids = accessible_services_ids | current_user.member_permission_ids.to_a if current_user.present? # TODO: fix this Set vs Array stuff
-      accessible_proxies = Proxy.where(service_id: accessible_services_ids)
-      oracle_adapter ? accessible_proxies.pluck(:id) : accessible_proxies.select(:id)
+      Proxy.where(service_id: accessible_services_ids).pluck(:id)
     end
   end
 
