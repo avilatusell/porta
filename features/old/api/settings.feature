@@ -10,7 +10,6 @@ Feature: API Settings
 
   Scenario: Referrer filtering on backend v2
     Given provider "foo.3scale.localhost" uses backend v2 in his default service
-      And I have rolling updates "api_as_product" disabled
       And I log in as provider "foo.3scale.localhost"
       And I go to the settings page for service "API" of provider "foo.3scale.localhost"
      And I check "Require referrer filtering"
@@ -19,7 +18,6 @@ Feature: API Settings
 
   Scenario: Changing the backend version including OIDC option
     Given provider "foo.3scale.localhost" uses backend v2 in his default service
-    And I have rolling updates "api_as_product" disabled
     And provider "foo.3scale.localhost" has multiple applications enabled
     And a default application plan of provider "foo.3scale.localhost"
     And a buyer "bob" signed up to provider "foo.3scale.localhost"
@@ -46,7 +44,6 @@ Feature: API Settings
 
   Scenario: API settings don't crash when APICAST_REGISTRY_URL is undefined
     Given apicast registry is undefined
-    And I have rolling updates "api_as_product" disabled
     When I log in as provider "foo.3scale.localhost"
     And I go to the integration show page for service "API" of provider "foo.3scale.localhost"
     And I follow "add the base URL of your API and save the configuration."
